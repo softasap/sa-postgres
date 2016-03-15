@@ -1,3 +1,6 @@
 ---
 # tasks file for sa.postgres
   - include: postgres.yml
+
+  - include: db_user.yml
+    when: option_create_app_user
