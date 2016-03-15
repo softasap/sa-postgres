@@ -1,0 +1,8 @@
+---
+# defaults file for sa.postgres
+
+  postgresql_version: 9.4
+
+  postgresql_listen_addresses:
+    - localhost  # * for any address
+  postgresql_port: 5432
