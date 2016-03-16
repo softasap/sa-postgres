@@ -1,0 +1,18 @@
+---
+  - name: Postgres | Allow listening remote connections from {{postgres_app_host}}
+    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/postgresql.conf" regexp="^(\s*)#\s*listen_addresses" line="\1listen_addresses = '{{postgresql_listen_addresses}}'" backrefs=yes
+    when: postgres_listen_host is defined
+    become: yes
+    tags: db
+
+  - name: Database | Allow connections from APP servers network
+    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)host\tall\tall\t{{postgres_app_network_regex}}\ttrust$" line="host    all             all             {{postgres_dev_network}}            trust" insertafter="^# IPv4 local connections:"
+    when: postgres_app_network_regex is defined
+    become: yes
+    tags: db
+
+  - name: Database | Allow connections from Developer's network
+    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)host\tall\tall\t{{postgres_dev_network_regex}}\ttrust$" line="host    all             all             {{postgres_dev_network}}            trust" insertafter="^# IPv4 local connections:"
+    when: postgres_dev_network_regex is defined
+    become: yes
+    tags: db
