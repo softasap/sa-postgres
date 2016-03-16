@@ -3,3 +3,6 @@
   - include: postgres.yml
 
   - include: postgres_remote.yml
+
+  - include: db_user.yml
+    when: option_create_app_user

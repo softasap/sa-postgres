@@ -1,0 +1,12 @@
+  - name: Database | Create db
+    postgresql_db: name={{db_name}}
+    become_user: postgres
+    become: yes
+    tags: db
+
+  - name: Database | Create user
+    postgresql_user: name={{db_user}} password={{db_password}} role_attr_flags=SUPERUSER
+    become_user: postgres
+    become: yes
+    tags: db
+
