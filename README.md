@@ -1,6 +1,8 @@
 SA-POSTGRES
 ===========
 
+[![Build Status](https://travis-ci.org/softasap/sa-postgres.svg?branch=master)](https://travis-ci.org/softasap/sa-postgres)
+
 Possible overrides:
 
 <pre>
@@ -29,5 +31,3 @@ Possible overrides:
 </pre>
 
 Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://github.com/Voronenko/devops-ruby-app-demo)
-
-
