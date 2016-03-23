@@ -31,3 +31,15 @@ Possible overrides:
 </pre>
 
 Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://github.com/Voronenko/devops-ruby-app-demo)
+
+
+<pre>
+
+
+     - {
+         role: "sa-postgres"
+       }
+
+
+
+</pre>
