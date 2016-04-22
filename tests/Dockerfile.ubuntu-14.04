@@ -1,6 +1,6 @@
 
 FROM ubuntu:14.04
-RUN apt-get update
+RUN apt-get update -y
 
 # Install Ansible
 RUN apt-get install -y software-properties-common git python-dev
