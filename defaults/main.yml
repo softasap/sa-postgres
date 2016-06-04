@@ -9,6 +9,9 @@
 
   postgresql_port: 5432
 
+  # set to true if you have issues with postgresql_ext authorization
+  postgres_force_change_peer_md5: false
+
   # Set remotely to allow listening
   #postgres_app_network: "192.168.0.1/32"
   #postgres_app_network_regex: "192\.168\.0\.1\/32"
