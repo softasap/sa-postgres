@@ -12,7 +12,7 @@
     tags: db
 
   - name: Database | Change peer authentication to md5
-    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)local\tall\tall\t{{postgres_dev_network_regex}}\tpeer$" line="local   all             all                                     md5" insertafter="^# "local" is for Unix domain socket connections only"
+    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)local\tall\tall\t\tpeer$" line="local   all             all                                     md5" insertafter="^# "local" is for Unix domain socket connections only"
     when: postgres_force_change_peer_md5 | default(false)
     become: yes
     tags: db
