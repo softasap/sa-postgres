@@ -32,6 +32,7 @@ Possible overrides:
 
 Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://github.com/Voronenko/devops-ruby-app-demo)
 
+Simple:
 
 <pre>
 
@@ -40,6 +41,23 @@ Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://gith
          role: "sa-postgres"
        }
 
+</pre>
 
+
+Advanced:
+
+<pre>
+
+
+     - {
+         role: "sa-postgres",
+         
+         redis_bind_to: 127.0.0.1
+
+         redis_properties:
+           - {regexp: "^bind *", line: "bind {{redis_bind_to}}"}
+           - {regexp: "^unixsocket *", line: "unixsocket /var/run/redis/redis.sock"}
+           - {regexp: "^unixsocketperm *", line: "unixsocketperm 777"}         
+       }
 
 </pre>
