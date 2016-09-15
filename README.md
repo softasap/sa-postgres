@@ -52,12 +52,20 @@ Advanced:
      - {
          role: "sa-postgres",
          
-         redis_bind_to: 127.0.0.1
+         postgresql_listen_addresses: 127.0.0.1,
+         
+         db_host: localhost,
+         db_user: app_user,
+         db_password: app_password,
+         db_name: app_database,         
+         
+         postgres_app_network: "192.168.0.1/32",
+         postgres_app_network_regex: "192\.168\.0\.1\/32",
 
-         redis_properties:
-           - {regexp: "^bind *", line: "bind {{redis_bind_to}}"}
-           - {regexp: "^unixsocket *", line: "unixsocket /var/run/redis/redis.sock"}
-           - {regexp: "^unixsocketperm *", line: "unixsocketperm 777"}         
+
+         postgres_dev_network: "192.168.0.1/32",
+         postgres_dev_network_regex: "192\.168\.0\.1\/32"
+
        }
 
 </pre>
