@@ -28,3 +28,11 @@
     become: yes
     when: psql_present|failed
     tags: psql
+
+
+  - name: PostgreSQL | Ensure Service is Started
+    service: name="postgresql" state=started
+    become: yes
+    when: psql_present|failed and docker_test is not defined
+    tags: psql
+
