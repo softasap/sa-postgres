@@ -5,7 +5,7 @@ SA-POSTGRES
 
 Possible overrides:
 
-<pre>
+```
 
   option_create_app_user: false
 
@@ -28,36 +28,88 @@ Possible overrides:
   db_password: app_password
   db_name: app_database
 
-</pre>
+```
 
 Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://github.com/Voronenko/devops-ruby-app-demo)
 
 Simple:
 
-<pre>
+```
 
 
      - {
          role: "sa-postgres"
        }
 
-</pre>
+```
 
 
 Advanced:
 
-<pre>
+```
 
 
      - {
          role: "sa-postgres",
          
-         redis_bind_to: 127.0.0.1
+         postgresql_listen_addresses: 127.0.0.1,
+         
+         db_host: localhost,
+         db_user: app_user,
+         db_password: app_password,
+         db_name: app_database,         
+         
+         postgres_app_network: "192.168.0.1/32",
+         postgres_app_network_regex: "192\.168\.0\.1\/32",
 
-         redis_properties:
-           - {regexp: "^bind *", line: "bind {{redis_bind_to}}"}
-           - {regexp: "^unixsocket *", line: "unixsocket /var/run/redis/redis.sock"}
-           - {regexp: "^unixsocketperm *", line: "unixsocketperm 777"}         
+
+         postgres_dev_network: "192.168.0.1/32",
+         postgres_dev_network_regex: "192\.168\.0\.1\/32"
+
        }
 
-</pre>
+```
+
+
+# Misc hints
+
+If you ever wanted to connect remotely using user postgres, you need first to set password for it:
+
+```
+sudo -u postgres psql postgres
+
+# \password postgres
+
+Enter new password:
+```
+
+
+In psql usual commands:
+
+```
+
+\l show databases
+
+```
+
+Importing database from sql file
+
+Importing DB
+
+```
+psql -d demo_test -f demo.sql
+```
+
+Generate pgsql schema diagram with schemacrawler  http://sualeh.github.io/SchemaCrawler/
+
+```
+
+schemacrawler -server=postgresql -database=demo_test -user=postgres -password=postgres -infolevel=maximum -command=graph -outputformat=pdf -outputfile=database-diagram.pdf
+
+```
+
+Generate pgsql schema diagram portal with schemaspy http://schemaspy.sourceforge.net/
+
+```
+schemaspy -t pgsql -db demo_test -host localhost -port 5432 -s public -u postgres -p postgres  -o output
+```
