@@ -5,7 +5,7 @@ SA-POSTGRES
 
 Possible overrides:
 
-```
+```YAML
 
   option_create_app_user: false
 
@@ -34,7 +34,7 @@ Example of use: [https://github.com/Voronenko/devops-ruby-app-demo](https://gith
 
 Simple:
 
-```
+```YAML
 
 
      - {
@@ -46,7 +46,7 @@ Simple:
 
 Advanced:
 
-```
+```YAML
 
 
      - {
@@ -113,3 +113,12 @@ Generate pgsql schema diagram portal with schemaspy http://schemaspy.sourceforge
 ```
 schemaspy -t pgsql -db demo_test -host localhost -port 5432 -s public -u postgres -p postgres  -o output
 ```
+
+
+Copyright and license
+---------------------
+
+Code licensed under the [BSD 3 clause] (https://opensource.org/licenses/BSD-3-Clause) or the [MIT License] (http://opensource.org/licenses/MIT).
+
+Subscribe for roles updates at [FB] (https://www.facebook.com/SoftAsap/)
+

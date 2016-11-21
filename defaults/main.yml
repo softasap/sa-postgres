@@ -24,3 +24,4 @@
   db_user: app_user
   db_password: app_password
   db_name: app_database
+  db_user_role: "CREATEDB,NOSUPERUSER"
