@@ -6,3 +6,5 @@
 
   - include: db_user.yml
     when: option_create_app_user
+
+  - include: tasks_console_helper.yml

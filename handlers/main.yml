@@ -1,2 +1,8 @@
 ---
 # handlers file for sa.postgres
+
+  - name: restart postgres
+    service: name="postgresql" state=started enabled=yes
+    become: yes
+    when: docker_test is not defined
+    tags: psql
