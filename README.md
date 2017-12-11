@@ -121,7 +121,7 @@ If you installed the `sa-postgres` role using the command
 
 
 `
-   ansible-galaxy install softasap.sa-ansible-ara
+   ansible-galaxy install softasap.sa-postgres
 `
 
 the role will be available in the folder `library/softasap.sa-postgres`
