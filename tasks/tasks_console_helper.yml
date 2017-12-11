@@ -17,6 +17,7 @@
     template: src="{{role_dir}}/templates/grcat.pgsql" dest="~/grcat.pgsql"
     become: yes
     become_user: postgres
+    when: docker_test is not defined
     tags: psql
 
   - name: PostgreSQL | psqlrc to postgres user
