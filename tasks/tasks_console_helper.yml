@@ -10,7 +10,7 @@
     tags: psql
 
   - name: PostgreSQL | psqlrc to current user
-    template: src="{{role_dir}}/templates/psqlrc.j2" dest="~/.psqlrc.j2"
+    template: src="{{role_dir}}/templates/psqlrc.j2" dest="~/.psqlrc"
     tags: psql
 
   - name: PostgreSQL | Template colorer to postgres user
