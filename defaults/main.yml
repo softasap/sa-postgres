@@ -1,6 +1,8 @@
 ---
 # defaults file for sa.postgres
 
+  role_dir: "{{role_path}}"
+
   option_create_app_user: false
 
   postgresql_version: 9.4
@@ -24,3 +26,4 @@
   db_user: app_user
   db_password: app_password
   db_name: app_database
+  db_user_role: "CREATEDB,NOSUPERUSER"

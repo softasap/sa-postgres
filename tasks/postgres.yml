@@ -14,7 +14,7 @@
     become: yes
 
   - name: PostgreSQL | Add apt repository
-    apt_repository: repo="deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" state=present update_cache=yes
+    apt_repository: repo="deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main" state=present update_cache=yes
     tags: psql
     when: psql_present|failed
     become: yes
@@ -27,4 +27,11 @@
       - python-psycopg2
     become: yes
     when: psql_present|failed
+    tags: psql
+
+
+  - name: PostgreSQL | Ensure Service is Started
+    service: name="postgresql" state=started enabled=yes
+    become: yes
+    when: docker_test is not defined
     tags: psql
