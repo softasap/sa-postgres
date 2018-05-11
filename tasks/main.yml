@@ -1,10 +1,10 @@
 ---
 # tasks file for sa.postgres
-  - include: postgres.yml
+  - include_tasks: postgres.yml
 
-  - include: postgres_remote.yml
+  - include_tasks: postgres_remote.yml
 
-  - include: db_user.yml
+  - include_tasks: db_user.yml
     when: option_create_app_user
 
-  - include: tasks_console_helper.yml
+  - include_tasks: tasks_console_helper.yml

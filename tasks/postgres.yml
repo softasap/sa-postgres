@@ -9,14 +9,14 @@
 
   - name: PostgreSQL | Add GPG key to apt keyring
     apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
-    when: psql_present|failed
+    when: psql_present is failed
     tags: psql
     become: yes
 
   - name: PostgreSQL | Add apt repository
     apt_repository: repo="deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main" state=present update_cache=yes
     tags: psql
-    when: psql_present|failed
+    when: psql_present is failed
     become: yes
 
   - name: PostgreSQL | Install
@@ -26,7 +26,7 @@
       - libpq-dev
       - python-psycopg2
     become: yes
-    when: psql_present|failed
+    when: psql_present is failed
     tags: psql
 
 
