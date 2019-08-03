@@ -4,34 +4,66 @@
   - name: PostgreSQL | Check if is installed
     command: test -x /usr/bin/psql
     register: psql_present
+    changed_when: false
     ignore_errors: yes
     tags: psql
 
-  - name: PostgreSQL | Add GPG key to apt keyring
-    apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
-    when: psql_present is failed
-    tags: psql
-    become: yes
+  - block:
 
-  - name: PostgreSQL | Add apt repository
-    apt_repository: repo="deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main" state=present update_cache=yes
-    tags: psql
-    when: psql_present is failed
-    become: yes
+    - name: PostgreSQL | Add GPG key to apt keyring
+      apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+      register: apt_key_result
+      until: apt_key_result is success
+      retries: 10
+      when: psql_present is failed
+      tags: psql
+      become: yes
 
-  - name: PostgreSQL | Install
-    apt: update-cache=yes force=yes state=present pkg={{item}}
-    with_items:
-      - "postgresql-{{postgresql_version}}"
-      - libpq-dev
-      - python-psycopg2
-    become: yes
-    when: psql_present is failed
-    tags: psql
+    - name: PostgreSQL | Add apt repository
+      apt_repository:
+        repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
+        state: present
+        update_cache: yes
+      tags: psql
+      when: psql_present is failed
+      become: yes
 
+    - name: PostgreSQL | Install
+      apt:
+        pkg:
+          - "postgresql-{{ postgresql_version }}"
+          - libpq-dev
+          - python-psycopg2
+        update-cache: yes
+        force: yes
+        state: present
+      register: package_install_result
+      until: package_install_result is success
+      retries: 10
+      become: yes
+      when: psql_present is failed
+      tags: psql
 
-  - name: PostgreSQL | Ensure Service is Started
-    service: name="postgresql" state=started enabled=yes
-    become: yes
-    when: docker_test is not defined
-    tags: psql
+    - name: PostgreSQL | Ensure Service is Started
+      service: name="postgresql" state=started enabled=yes
+      become: yes
+      when: docker_test is not defined
+      tags: psql
+
+    when: ansible_os_family == 'Debian
+
+  - block:
+
+    - name: Ensure PostgreSQL packages are installed.
+      package:
+        name:
+          - postgresql
+          - postgresql-server
+          - postgresql-contrib
+          - postgresql-libs
+        state: present
+      register: postgres_install_result
+      until: postgres_install_result is success
+      retries: 10
+
+    when: ansible_os_family == 'Redhat'

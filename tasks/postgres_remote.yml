@@ -1,21 +1,33 @@
 ---
-  - name: Postgres | Allow listening remote connections from {{postgres_app_host}}
-    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/postgresql.conf" regexp="^(\s*)#\s*listen_addresses" line="\1listen_addresses = '{{postgresql_listen_addresses}}'" backrefs=yes
+  - name: Postgres | Allow listening remote connections from {{ postgres_app_host }}
+    lineinfile:
+      dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+      regexp: "^(\\s*)#\\s*listen_addresses"
+      line: "\\1listen_addresses = '{{ postgresql_listen_addresses }}'"
+      backrefs: yes
     when: postgresql_listen_addresses | default(false)
     notify: restart postgres
     become: yes
     tags: db
 
   - name: Database | Allow connections from APP servers network
-    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)host\tall\tall\t{{postgres_app_network_regex}}\ttrust$" line="host    all             all             {{postgres_dev_network}}            trust" insertafter="^# IPv4 local connections:"
+    lineinfile:
+      dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+      regexp: "^(\\s*)host\\tall\\tall\\t{{ postgres_app_network_regex }}\\ttrust$"
+      line: "host    all             all             {{ postgres_dev_network }}            trust"
+      insertafter: "^# IPv4 local connections:"
     when: postgres_app_network_regex | default(false)
     notify: restart postgres
     become: yes
     tags: db
 
   - name: Database | Change peer authentication to md5
-    lineinfile: dest="/etc/postgresql/{{postgresql_version}}/main/pg_hba.conf" regexp="^(\s*)local\tall\tall\t\tpeer$" line="local   all             all                                     md5" insertafter="^# "local" is for Unix domain socket connections only"
+    lineinfile:
+      dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+      regexp: "^(\\s*)local\\tall\\tall\\t\\tpeer$"
+      line: "local   all             all                                     md5"
+      insertafter: "^# \"local\" is for Unix domain socket connections only"
     when: postgres_force_change_peer_md5 | default(false)
-    notify: restart postgres    
+    notify: restart postgres
     become: yes
     tags: db
