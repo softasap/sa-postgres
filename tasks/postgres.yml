@@ -92,7 +92,7 @@
 
     - name: PostgreSQL | InitDB
       shell: service postgresql initdb
-      when: not pgdata_dir_version.stat.exists
+      when: not pgdata_dir_version.stat.exists and docker_test is not defined
       become: yes
       tags:
        - psql
@@ -101,6 +101,7 @@
     - name: PostgreSQL | Check config
       shell: chkconfig postgresql on
       become: yes
+      when: docker_test is not defined
       tags:
        - psql
        - skip_ansible_lint
