@@ -17,7 +17,7 @@
   - include_tasks: postgres.yml
 
   - include_tasks: postgres_remote.yml
-    when: not ( docker_test is defined and ansible_os_family in ["Redhat"] )
+    when: not ( docker_test is defined and ansible_os_family in ["Redhat", "CentOS"] )
 
   - include_tasks: db_user.yml
     when: option_create_app_user
