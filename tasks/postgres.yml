@@ -112,5 +112,5 @@
       when: docker_test is not defined
       tags: psql
 
-    when: ansible_os_family in ["Redhat", "CentOS"]
+    when: ansible_os_family in ["RedHat"]
 
