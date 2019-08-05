@@ -55,10 +55,10 @@ ansible:
   #   pipelining: True
 
 platforms:
-  - name: bionic
-    box: ubuntu/bionic64
-  - name: centos6
-    box: centos/6
+  # - name: bionic
+  #   box: ubuntu/bionic64
+  # - name: centos6
+  #   box: centos/6
   - name: centos7
     box: centos/7
 

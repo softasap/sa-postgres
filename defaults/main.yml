@@ -6,6 +6,8 @@
   option_create_app_user: false
 
   postgresql_version: 9.4
+  postgresql_config_path: "/etc/postgresql/{{ postgresql_version }}/main"
+  postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
 
   postgresql_listen_addresses: localhost  # * for any address
 

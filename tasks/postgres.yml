@@ -1,6 +1,5 @@
 ---
   # Parameters:
-
   - name: PostgreSQL | Check if is installed
     command: test -x /usr/bin/psql
     register: psql_present
@@ -50,11 +49,27 @@
       when: docker_test is not defined
       tags: psql
 
-    when: ansible_os_family == 'Debian
+    when: ansible_os_family == "Debian"
 
   - block:
 
-    - name: Ensure PostgreSQL packages are installed.
+    - name: PostgreSQL | Ensure PostgreSQL deps are installed for {{ ansible_os_family }}
+      package:
+        name:
+          - ca-certificates
+          - python-psycopg2
+          - python-pycurl
+          - glibc-common
+          - epel-release
+          - libselinux-python
+        state: present
+      register: deps_install_result
+      until: deps_install_result is success
+      retries: 10
+      become: yes
+      tags: psql
+
+    - name: PostgreSQL | Ensure PostgreSQL packages are installed for {{ ansible_os_family }}
       package:
         name:
           - postgresql
@@ -65,5 +80,36 @@
       register: postgres_install_result
       until: postgres_install_result is success
       retries: 10
+      become: yes
+      tags: psql
 
-    when: ansible_os_family == 'Redhat'
+    - name: Check if PostgreSQL database is initialized.
+      stat:
+        path: "{{ postgresql_data_dir }}/PG_VERSION"
+      register: pgdata_dir_version
+      become: yes
+      tags: psql
+
+    - name: PostgreSQL | InitDB
+      shell: service postgresql initdb
+      when: not pgdata_dir_version.stat.exists
+      become: yes
+      tags:
+       - psql
+       - skip_ansible_lint
+
+    - name: PostgreSQL | Check config
+      shell: chkconfig postgresql on
+      become: yes
+      tags:
+       - psql
+       - skip_ansible_lint
+
+    - name: PostgreSQL | Ensure Service is Started
+      service: name="postgresql" state=started enabled=yes
+      become: yes
+      when: docker_test is not defined
+      tags: psql
+
+    when: ansible_os_family != "Redhat"
+
