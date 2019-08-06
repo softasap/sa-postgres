@@ -8,7 +8,21 @@
     when: postgresql_listen_addresses | default(false)
     notify: restart postgres
     become: yes
-    tags: db
+    tags:
+      - postgres
+
+
+  - name: Postgres | Patch basic settings {{ postgresql_config_path }}/postgresql.conf
+    lineinfile:
+      dest: "{{ postgresql_config_path }}/postgresql.conf"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+      insertafter: "{{item.insertafter | default('EOF')}}"
+    with_items: "{{postgresql_properties | default([])}}"
+    notify: restart postgres
+    become: yes
+    tags:
+      - postgres
 
   - name: Database | Allow connections from APP servers network
     lineinfile:
@@ -19,7 +33,8 @@
     when: postgres_app_network_regex | default(false)
     notify: restart postgres
     become: yes
-    tags: db
+    tags:
+      - postgres
 
   - name: Database | Change peer authentication to md5
     lineinfile:
@@ -30,4 +45,17 @@
     when: postgres_force_change_peer_md5 | default(false)
     notify: restart postgres
     become: yes
-    tags: db
+    tags:
+      - postgres
+
+  - name: Postgres | Patch basic settings {{ postgresql_config_path }}/pg_hba.conf
+    lineinfile:
+      dest: "{{ postgresql_config_path }}/pg_hba.conf"
+      regexp: "{{item.regexp}}"
+      line: "{{item.line}}"
+      insertafter: "{{item.insertafter | default('EOF')}}"
+    with_items: "{{pg_hba_properties | default([])}}"
+    notify: restart postgres
+    become: yes
+    tags:
+      - postgres
