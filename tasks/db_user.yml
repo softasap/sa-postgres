@@ -1,5 +1,6 @@
   - name:  Database | Get acl dependency (ansible unprivileged user operations magic)
     apt: pkg="acl"
+    when: ansible_os_family == "Debian"
     register: acl_result
     until: acl_result is success
     retries: 10
