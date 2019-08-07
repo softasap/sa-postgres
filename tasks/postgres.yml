@@ -116,7 +116,7 @@
 
       when: postgresql_base_version == postgresql_version # /DEFAULT DISTRIBUTION
 
-      - block: #  Non standard supported by postgresql.org
+    - block: #  Non standard supported by postgresql.org
 
         - name: PostgreSQL | Repo try 1
           uri:
@@ -175,7 +175,7 @@
           tags:
           - psql
 
-        when: postgresql_base_version == postgresql_version #  /Non standard supported by postgresql.org
+      when: postgresql_base_version == postgresql_version #  /Non standard supported by postgresql.org
 
     when: ansible_os_family in ["RedHat"]
 
