@@ -116,7 +116,7 @@
 
       when: postgresql_base_version == postgresql_version # /DEFAULT DISTRIBUTION
 
-      -block: #  Non standard supported by postgresql.org
+      - block: #  Non standard supported by postgresql.org
 
         - name: PostgreSQL | Repo try 1
           uri:
