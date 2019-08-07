@@ -120,6 +120,14 @@
 
     - block: #  Non standard supported by postgresql.org
 
+        - name: PostgreSQL | Override data conf paths
+          set_fact:
+             postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
+             postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
+          no_log: true
+          tags:
+          - psql
+
         - name: PostgreSQL | Repo try 3
           uri:
             url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-3.noarch.rpm"
