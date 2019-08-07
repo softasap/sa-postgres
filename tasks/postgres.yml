@@ -120,10 +120,19 @@
 
     - block: #  Non standard supported by postgresql.org
 
-        - name: PostgreSQL | Repo try 1
+        - name: PostgreSQL | Repo try 3
+          uri:
+            url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-3.noarch.rpm"
+          register: repo_test3
+          ignore_errors: yes
+          no_log: true
+          tags:
+          - psql
+
+        - name: PostgreSQL | Repo try 2
           uri:
             url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-2.noarch.rpm"
-          register: repo_test
+          register: repo_test2
           ignore_errors: yes
           no_log: true
           tags:
@@ -133,7 +142,7 @@
           yum:
             name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-1.noarch.rpm"
             state: present
-          when: repo_test.status == 404
+          when: repo_test2.status == 404 and repo_test3.status == 404
           become: yes
           tags:
           - psql
@@ -143,7 +152,16 @@
             name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-2.noarch.rpm"
             state: present
           become: yes
-          when: repo_test.status == 200
+          when: repo_test2.status == 200
+          tags:
+          - psql
+
+        - name: PostgreSQL | Install postgres RPM repo (Third release)
+          yum:
+            name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{postgresql_version }}-3.noarch.rpm"
+            state: present
+          become: yes
+          when: repo_test3.status == 200
           tags:
           - psql
 
