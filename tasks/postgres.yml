@@ -166,13 +166,14 @@
           - psql
 
         - name: PostgreSQL | Install postgres packages and other deps
-          yum: name={{item}} state=present
-          with_items:
-            - postgresql{{ postgresql_version | replace('.', '') }}-server
-            - postgresql{{ postgresql_version | replace('.', '') }}-contrib
-            - python-psycopg2
-            - postgresql-libs
-            - libselinux-python
+          yum:
+            state: present
+            name:
+              - postgresql{{ postgresql_version | replace('.', '') }}-server
+              - postgresql{{ postgresql_version | replace('.', '') }}-contrib
+              - python-psycopg2
+              - postgresql-libs
+              - libselinux-python
           become: yes
           tags:
           - psql
