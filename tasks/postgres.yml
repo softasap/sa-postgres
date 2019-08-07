@@ -182,7 +182,6 @@
           command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version | replace('.', '') }}-setup initdb
           args:
             creates: /var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf
-          when: ansible_distribution_major_version == "6"
           become: yes
           tags:
           - psql
