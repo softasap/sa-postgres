@@ -69,6 +69,8 @@
       become: yes
       tags: psql
 
+    - debug: msg="base {{ postgresql_base_version }}  expected {{ postgresql_version }}"
+
     - block: # DEFAULT DISTRIBUTION
 
       - name: PostgreSQL | Ensure PostgreSQL packages are installed for {{ ansible_os_family }}
@@ -171,11 +173,12 @@
             name: postgresql-{{ postgresql_version }}
             enabled: yes
             state: started
+          when: docker_test is not defined
           become: yes
           tags:
           - psql
 
-      when: postgresql_base_version == postgresql_version #  /Non standard supported by postgresql.org
+      when: not( postgresql_base_version == postgresql_version ) #  /Non standard supported by postgresql.org
 
     when: ansible_os_family in ["RedHat"]
 
