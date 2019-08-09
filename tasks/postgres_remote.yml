@@ -48,6 +48,19 @@
     tags:
       - postgres
 
+- name: Database | Change authentication to password for postgres_dev_network
+    lineinfile:
+      dest: "{{ postgresql_config_path }}/pg_hba.conf"
+      regexp: "^(\\s*)host\\tall\\tall\\t{{ postgres_dev_network }}\\tpassword$"
+      line: "host    all             all             {{ postgres_dev_network }}            password"
+      insertafter: "^# IPv4 local connections"
+    when: postgres_allow_password_to_dev_network | default(false)
+    notify: restart postgres
+    become: yes
+    tags:
+      - postgres
+
+
   - name: Postgres | Patch basic settings {{ postgresql_config_path }}/pg_hba.conf
     lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
