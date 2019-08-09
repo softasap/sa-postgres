@@ -124,6 +124,7 @@
           set_fact:
              postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
              postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
+             postgresql_service_name: "postgresql-{{ postgresql_version }}"
           no_log: true
           tags:
           - psql

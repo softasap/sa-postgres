@@ -12,6 +12,7 @@
   postgresql_listen_addresses: localhost  # * for any address
 
   postgresql_port: 5432
+  postgresql_service_name: "postgresql"
 
   # set to true if you have issues with postgresql_ext authorization
   postgres_force_change_peer_md5: false
