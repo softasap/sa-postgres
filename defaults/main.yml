@@ -25,7 +25,7 @@
 
   # Set remotely to allow listening
   postgres_dev_network: "127.0.0.1/32"
-  postgres_dev_network_regex: "127\.0\.0\.1\/32"
+  postgres_dev_network_regex: "127\\.0\\.0\\.1\\/32"
 
   db_host: localhost
   db_user: app_user
