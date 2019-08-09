@@ -48,7 +48,7 @@
     tags:
       - postgres
 
-- name: Database | Change authentication to password for postgres_dev_network
+  - name: Database | Change authentication to password for postgres_dev_network
     lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       regexp: "^(\\s*)host\\tall\\tall\\t{{ postgres_dev_network }}\\tpassword$"
