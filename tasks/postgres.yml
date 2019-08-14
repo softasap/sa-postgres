@@ -69,48 +69,146 @@
       become: yes
       tags: psql
 
-    - name: PostgreSQL | Ensure PostgreSQL packages are installed for {{ ansible_os_family }}
-      package:
-        name:
-          - postgresql
-          - postgresql-server
-          - postgresql-contrib
-          - postgresql-libs
-        state: present
-      register: postgres_install_result
-      until: postgres_install_result is success
-      retries: 10
-      become: yes
-      tags: psql
+    - debug: msg="base {{ postgresql_base_version }}  expected {{ postgresql_version }}"
 
-    - name: Check if PostgreSQL database is initialized.
-      stat:
-        path: "{{ postgresql_data_dir }}/PG_VERSION"
-      register: pgdata_dir_version
-      become: yes
-      tags: psql
+    - block: # DEFAULT DISTRIBUTION
 
-    - name: PostgreSQL | InitDB
-      shell: service postgresql initdb
-      when: not pgdata_dir_version.stat.exists and docker_test is not defined
-      become: yes
-      tags:
-       - psql
-       - skip_ansible_lint
+      - name: PostgreSQL | Ensure PostgreSQL packages are installed for {{ ansible_os_family }}
+        package:
+          name:
+            - postgresql
+            - postgresql-server
+            - postgresql-contrib
+            - postgresql-libs
+          state: present
+        register: postgres_install_result
+        until: postgres_install_result is success
+        retries: 10
+        become: yes
+        tags: psql
 
-    - name: PostgreSQL | Check config
-      shell: chkconfig postgresql on
-      become: yes
-      when: docker_test is not defined
-      tags:
-       - psql
-       - skip_ansible_lint
+      - name: Check if PostgreSQL database is initialized.
+        stat:
+          path: "{{ postgresql_data_dir }}/PG_VERSION"
+        register: pgdata_dir_version
+        become: yes
+        tags: psql
 
-    - name: PostgreSQL | Ensure Service is Started
-      service: name="postgresql" state=started enabled=yes
-      become: yes
-      when: docker_test is not defined
-      tags: psql
+      - name: PostgreSQL | InitDB
+        shell: service postgresql initdb
+        when: not pgdata_dir_version.stat.exists and docker_test is not defined
+        become: yes
+        tags:
+        - psql
+        - skip_ansible_lint
+
+      - name: PostgreSQL | Check config
+        shell: chkconfig postgresql on
+        become: yes
+        when: docker_test is not defined
+        tags:
+        - psql
+        - skip_ansible_lint
+
+      - name: PostgreSQL | Ensure Service is Started
+        service: name="postgresql" state=started enabled=yes
+        become: yes
+        when: docker_test is not defined
+        tags: psql
+
+      when: postgresql_base_version == postgresql_version # /DEFAULT DISTRIBUTION
+
+    - block: #  Non standard supported by postgresql.org
+
+        - name: PostgreSQL | Override data conf paths
+          set_fact:
+             postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
+             postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
+             postgresql_service_name: "postgresql-{{ postgresql_version }}"
+          no_log: true
+          tags:
+          - psql
+
+        - name: PostgreSQL | Repo try 3
+          uri:
+            url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-3.noarch.rpm"
+          register: repo_test3
+          ignore_errors: yes
+          no_log: true
+          tags:
+          - psql
+
+        - name: PostgreSQL | Repo try 2
+          uri:
+            url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-2.noarch.rpm"
+          register: repo_test2
+          ignore_errors: yes
+          no_log: true
+          tags:
+          - psql
+          - skip_ansible_lint
+
+        - name: PostgreSQL | Install postgres RPM repo (first release)
+          yum:
+            name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-1.noarch.rpm"
+            state: present
+          when: repo_test2.status == 404 and repo_test3.status == 404
+          become: yes
+          tags:
+          - psql
+          - skip_ansible_lint
+
+        - name: PostgreSQL | Install postgres RPM repo (Second release)
+          yum:
+            name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-2.noarch.rpm"
+            state: present
+          become: yes
+          when: repo_test2.status == 200
+          tags:
+          - psql
+          - skip_ansible_lint
+
+        - name: PostgreSQL | Install postgres RPM repo (Third release)
+          yum:
+            name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-3.noarch.rpm"
+            state: present
+          become: yes
+          when: repo_test3.status == 200
+          tags:
+          - psql
+          - skip_ansible_lint          
+
+        - name: PostgreSQL | Install postgres packages and other deps
+          yum:
+            state: present
+            name:
+              - postgresql{{ postgresql_version | replace('.', '') }}-server
+              - postgresql{{ postgresql_version | replace('.', '') }}-contrib
+              - python-psycopg2
+              - postgresql-libs
+              - libselinux-python
+          become: yes
+          tags:
+          - psql
+
+        - name: PostgreSQL | Initialize postgres db
+          command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version | replace('.', '') }}-setup initdb
+          args:
+            creates: /var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf
+          become: yes
+          tags:
+          - psql
+
+        - name: Enable and start postgres service
+          service:
+            name: postgresql-{{ postgresql_version }}
+            enabled: yes
+            state: started
+          when: docker_test is not defined
+          become: yes
+          tags:
+          - psql
+
+      when: not( postgresql_base_version == postgresql_version ) #  /Non standard supported by postgresql.org
 
     when: ansible_os_family in ["RedHat"]
-

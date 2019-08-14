@@ -12,17 +12,21 @@
   postgresql_listen_addresses: localhost  # * for any address
 
   postgresql_port: 5432
+  postgresql_service_name: "postgresql"
 
   # set to true if you have issues with postgresql_ext authorization
   postgres_force_change_peer_md5: false
+
+  # set to true if you want to be able to authorize via uname/pass rather than rely on unix username for login
+  postgres_allow_password_to_dev_network: false
 
   # Set remotely to allow listening
   #postgres_app_network: "192.168.0.1/32"
   #postgres_app_network_regex: "192\.168\.0\.1\/32"
 
   # Set remotely to allow listening
-  #postgres_dev_network: "192.168.0.1/32"
-  #postgres_dev_network_regex: "192\.168\.0\.1\/32"
+  postgres_dev_network: "127.0.0.1/32"
+  postgres_dev_network_regex: "127\\.0\\.0\\.1\\/32"
 
   db_host: localhost
   db_user: app_user
