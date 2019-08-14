@@ -15,10 +15,10 @@
   - name: Postgres | Patch basic settings {{ postgresql_config_path }}/postgresql.conf
     lineinfile:
       dest: "{{ postgresql_config_path }}/postgresql.conf"
-      regexp: "{{item.regexp}}"
-      line: "{{item.line}}"
-      insertafter: "{{item.insertafter | default('EOF')}}"
-    with_items: "{{postgresql_properties | default([])}}"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      insertafter: "{{ item.insertafter | default('EOF') }}"
+    with_items: "{{ postgresql_properties | default([]) }}"
     notify: restart postgres
     become: yes
     tags:
@@ -64,10 +64,10 @@
   - name: Postgres | Patch basic settings {{ postgresql_config_path }}/pg_hba.conf
     lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
-      regexp: "{{item.regexp}}"
-      line: "{{item.line}}"
-      insertafter: "{{item.insertafter | default('EOF')}}"
-    with_items: "{{pg_hba_properties | default([])}}"
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      insertafter: "{{ item.insertafter | default('EOF') }}"
+    with_items: "{{ pg_hba_properties | default([]) }}"
     notify: restart postgres
     become: yes
     tags:
