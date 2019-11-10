@@ -176,7 +176,7 @@
           when: repo_test3.status == 200
           tags:
           - psql
-          - skip_ansible_lint          
+          - skip_ansible_lint
 
         - name: PostgreSQL | Install postgres packages and other deps
           yum:
