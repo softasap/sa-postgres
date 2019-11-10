@@ -59,8 +59,8 @@ platforms:
   #   box: ubuntu/bionic64
   # - name: centos6
   #   box: centos/6
-  - name: centos7
-    box: centos/7
+  # - name: centos7
+  #   box: centos/7
 
     # interfaces:
     #   - auto_config: true
@@ -77,8 +77,8 @@ platforms:
   #   #   - network_name: public_network
   #   #     type: dhcp
   #   #     auto_config: true
-  # - name: xenial
-  #   box: ubuntu/xenial64
+  - name: xenial
+    box: ubuntu/xenial64
   # - name: bionic
   #   box: ubuntu/bionic64
     # interfaces:
