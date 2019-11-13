@@ -55,13 +55,10 @@ ansible:
   #   pipelining: True
 
 platforms:
-  # - name: bionic
-  #   box: ubuntu/bionic64
-  # - name: centos6
-  #   box: centos/6
-  # - name: centos7
-  #   box: centos/7
-
+  - name: bionic
+    box: ubuntu/bionic64
+    memory: 4096
+    cpus: 2
     # interfaces:
     #   - auto_config: true
     #     network_name: private_network
@@ -77,8 +74,8 @@ platforms:
   #   #   - network_name: public_network
   #   #     type: dhcp
   #   #     auto_config: true
-  - name: xenial
-    box: ubuntu/xenial64
+  # - name: xenial
+  #   box: ubuntu/xenial64
   # - name: bionic
   #   box: ubuntu/bionic64
     # interfaces:
