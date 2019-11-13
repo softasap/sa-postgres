@@ -1,1 +1,4 @@
 ---
+
+custom_pg_hba_properties:
+  - line: "# Hello world"
