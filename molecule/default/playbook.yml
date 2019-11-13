@@ -3,12 +3,14 @@
   hosts: all
 
   pre_tasks:
-    - debug: msg="Pre tasks section for {{ansible_host}}"
+    - debug: msg="Pre tasks section for {{ ansible_host }}"
 
-    - set_fact:
+    - name: set default facts
+      set_fact:
         remote_ip_address: "{{ ansible_host }}"
 
-    - include_vars: "playbook_vars.yml"
+    - name: Include default vars
+      include_vars: "playbook_vars.yml"
 
   roles:
      - {
