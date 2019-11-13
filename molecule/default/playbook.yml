@@ -14,5 +14,9 @@
 
   roles:
      - {
-        role: "sa-postgres"
+        role: "sa-postgres",
+        postgresql_listen_addresses: "127.0.0.1",
+        postgres_force_change_peer_md5: true,
+        postgres_allow_password_to_dev_network: true,
+        pg_hba_properties: "{{ custom_pg_hba_properties }}"
        }
