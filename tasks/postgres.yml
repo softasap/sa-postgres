@@ -53,6 +53,9 @@
 
   - block:
 
+    - name: For troubleshouting, output ansible_python_version
+      debug: var="ansible_python_version"
+
     - name: PostgreSQL | Ensure PostgreSQL deps are installed for {{ ansible_os_family }}
       package:
         name:
@@ -65,9 +68,28 @@
         state: present
       register: deps_install_result
       until: deps_install_result is success
+      when: ansible_python_version is version_compare('3','<')
       retries: 10
       become: yes
       tags: psql
+
+    - name: PostgreSQL | Ensure PostgreSQL deps are installed for {{ ansible_os_family }}
+      package:  
+        name:
+          - ca-certificates
+          - python3-psycopg2
+          - python3-pycurl
+          - glibc-common
+          - epel-release
+        state: present
+      register: deps_install_result
+      until: deps_install_result is success
+      when: ansible_python_version is version_compare('3','>=')
+      retries: 10
+      become: yes
+      tags: psql
+
+
 
     - debug: msg="base {{ postgresql_base_version }}  expected {{ postgresql_version }}"
 
