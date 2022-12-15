@@ -6,7 +6,7 @@
       line: "\\1listen_addresses = '{{ postgresql_listen_addresses }}'"
       backrefs: yes
     when: postgresql_listen_addresses | default(false)
-    notify: restart postgres
+    notify: Restart postgres
     become: true
     tags:
       - postgres
