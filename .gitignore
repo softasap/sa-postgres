@@ -1,3 +1,4 @@
+.cache
 box-example/roles
 *.retry
 tempfile
@@ -21,3 +22,7 @@ roles/**/.ansible-lint
 *.tar.gz
 *.tgz
 .venv
+meta/.galaxy_install_info
+result.sarif
+auto-patch.sh
+molecule/update_deps.sh
