@@ -6,6 +6,7 @@ name: CI
     branches:
       - master
       - develop
+      - 22-04
       - '!release/*'
   schedule:
     - cron: "10 5 * * 2"
