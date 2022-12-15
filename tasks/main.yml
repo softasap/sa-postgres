@@ -2,7 +2,7 @@
 # tasks file for sa.postgres
 
   - name: Include provider related vars
-    include_vars: "{{ item }}"
+    ansible.builtin.include_vars: "{{ item }}"
     with_first_found:
       - files:
           - "{{ ansible_distribution }}-{{ ansible_distribution_version.split('.')[0] }}.yml" # Debian like
@@ -14,19 +14,36 @@
     tags:
       - always
 
-  - include_tasks: postgres.yml
+  - name:  Database | Get acl dependency (ansible unprivileged user operations magic)
+    ansible.builtin.apt:
+      pkg: acl
+    when: ansible_os_family == "Debian"
+    register: acl_result
+    until: acl_result is success
+    retries: 10
+    become: true
+    tags:
+      - psql
 
-  - include_tasks: postgres_remote.yml
+  - name: Postgres
+    ansible.builtin.include_tasks: postgres.yml
+
+  - name: Configure postgres remote
+    ansible.builtin.include_tasks: postgres_remote.yml
     when: not ( docker_test is defined and ansible_os_family in ["RedHat"] )
 
-  - include_tasks: db_user.yml
+  - name: DB user if true for option_create_app_user={{ option_create_app_user }}
+    ansible.builtin.include_tasks: db_user.yml
     when: option_create_app_user
 
-  - include_tasks: tasks_console_helper.yml
+  - name: Task Console Helper
+    ansible.builtin.include_tasks: tasks_console_helper.yml
 
   - name: PostgreSQL | Control postgres restart
-    service: name="{{ postgresql_service_name }}" state=started enabled=yes
-    become: yes
+    ansible.builtin.service:
+      name: "{{ postgresql_service_name }}"
+      state: started
+      enabled: yes
+    become: true
     when: docker_test is not defined
     tags: psql
-

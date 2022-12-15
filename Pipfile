@@ -1,3 +1,7 @@
+# conda run -n py39 which python
+# PIPENV_NO_INHERIT=True  pipenv --python=$(shell conda run -n py39 which python) --no-site-packages
+# export PATH="$PWD/.venv/bin:$PATH"
+
 [[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
@@ -6,13 +10,15 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ansible = "==2.9.6"
-molecule = "==3.0.2"
-molecule-vagrant = "*"
-molecule-digitalocean = "*"
-pytest-molecule = "*"
-molecule-ec2 = "*"
-flake8 = "*"
+ansible = "~=7.1.0"
+molecule = "~=4.0.4"
+molecule-vagrant = "~=1.0.0"
+molecule-digitalocean = "~=0.1"
+pytest-molecule = "~=2.0.0"
+molecule-ec2 = "~=0.4"
+flake8 = "~=6.0.0"
+molecule-docker = "~=2.1.0"
+ansible-lint = "~=6.10.0"
 
 [requires]
-python_version = "3.6"
+python_version = "3.9"

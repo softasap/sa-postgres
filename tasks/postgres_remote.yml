@@ -1,87 +1,87 @@
 ---
   - name: Postgres | Allow listening remote connections from {{ postgres_app_host }}
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/postgresql.conf"
       regexp: "^(\\s*)#\\s*listen_addresses"
       line: "\\1listen_addresses = '{{ postgresql_listen_addresses }}'"
       backrefs: yes
     when: postgresql_listen_addresses | default(false)
     notify: restart postgres
-    become: yes
+    become: true
     tags:
       - postgres
 
 
-  - name: Postgres | Patch basic settings {{ postgresql_config_path }}/postgresql.conf
-    lineinfile:
+  - name: Postgres | Patch basic settings postgresql.conf under {{ postgresql_config_path }}
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/postgresql.conf"
       regexp: "{{ item.regexp | default(omit) }}"
       line: "{{ item.line }}"
       insertafter: "{{ item.insertafter | default('EOF') }}"
       state: "{{ item.state | default('present') }}"
     with_items: "{{ postgresql_properties | default([]) }}"
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres
 
   - name: Database | Allow connections from APP servers network
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       line: "host    all             all             {{ postgres_dev_network }}            trust"
       insertafter: "^# IPv4 local connections:"
     when: postgres_app_network_regex | default(false)
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres
 
   - name: Database | Change peer authentication to md5 (1/2) - comment peer
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       regexp: (^(\s+)?local\s+all\s+all\s+peer)$
       line: '# \1'
       backrefs: yes
       state: present
     when: postgres_force_change_peer_md5 | default(false)
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres
 
   - name: Database | Change peer authentication to md5 (2/2) - introduce md5
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       line: "local   all             all                                     md5"
       insertafter: "^# \"local\" is for Unix domain socket connections only"
       state: present
     when: postgres_force_change_peer_md5 | default(false)
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres
 
   - name: Database | Change authentication to password for postgres_dev_network
-    lineinfile:
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       line: "host    all             all             {{ postgres_dev_network }}            password"
       insertafter: "^# IPv4 local connections"
       state: present
     when: postgres_allow_password_to_dev_network | default(false)
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres
 
-  - name: Postgres | Patch basic settings {{ postgresql_config_path }}/pg_hba.conf
-    lineinfile:
+  - name: Postgres | Patch basic settings pg_hba.conf under {{ postgresql_config_path }}
+    ansible.builtin.lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
       regexp: "{{ item.regexp | default(omit) }}"
       line: "{{ item.line }}"
       insertafter: "{{ item.insertafter | default('EOF') }}"
       state: "{{ item.state | default('present') }}"
     with_items: "{{ pg_hba_properties | default([]) }}"
-    notify: restart postgres
-    become: yes
+    notify: Restart postgres
+    become: true
     tags:
       - postgres

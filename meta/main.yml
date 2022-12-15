@@ -2,6 +2,8 @@
 galaxy_info:
   author: vyacheslav voronenko
   description: Installs postgresql, app user, optionally patches listen address and trusted networks.
+  role_name: sa_postgres  # if absent directory name hosting role is used instead
+  namespace: softasap
   company: http://www.voronenko.info/
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
@@ -26,11 +28,13 @@ galaxy_info:
         - trusty
         - xenial
         - bionic
+        - focal
+        - jammy
     - name: EL
       versions:
 #        - 6
-        - 7
-        - 8
+        - "7"
+        - "8"
   galaxy_tags:
     - postgres
     - ubuntu

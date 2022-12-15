@@ -3,9 +3,9 @@
     hosts: localhost
     gather_facts: no
     tasks:
- 
+
       - name: Database | Change peer authentication to md5 (1/2) - comment peer
-        lineinfile:
+        ansible.builtin.lineinfile:
           dest: "config.txt"
           regexp: (^(\s+)?local\s+all\s+all\s+peer)$
           line: '# \1'
@@ -14,17 +14,15 @@
           insertafter: "^# \"local\" is for Unix domain socket connections only"
 
       - name: Database | Change peer authentication to md5 (2/2) - add md5
-        lineinfile:
+        ansible.builtin.lineinfile:
           dest: "config.txt"
           insertafter: "^# \"local\" is for Unix domain socket connections only"
           line: "local   all             all                                     md5"
-          state: present  
+          state: present
 
       - name: Database | Change peer authentication to md5 (2/2) - add md5
-        lineinfile:
+        ansible.builtin.lineinfile:
           dest: "config.txt"
           line: "host    all             all             127.0.0.1            password"
           insertafter: "^# IPv4 local connections"
           state: present
-
-

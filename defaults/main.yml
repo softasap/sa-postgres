@@ -1,11 +1,11 @@
 ---
 # defaults file for sa.postgres
 
-  role_dir: "{{role_path}}"
+  role_dir: "{{ role_path }}"
 
   option_create_app_user: false
 
-  postgresql_version: 9.4
+  postgresql_version: 15
   postgresql_base_version: "{{ postgresql_version }}" # overwrite at vars level depending on OS capabilities
   postgresql_config_path: "/etc/postgresql/{{ postgresql_version }}/main"
   postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"

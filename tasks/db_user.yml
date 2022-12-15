@@ -1,24 +1,17 @@
-  - name:  Database | Get acl dependency (ansible unprivileged user operations magic)
-    apt: pkg="acl"
-    when: ansible_os_family == "Debian"
-    register: acl_result
-    until: acl_result is success
-    retries: 10
-    become: yes
-    tags:
-      - db
-
   - name: Database | Create db
-    postgresql_db: name={{ db_name }}
+    community.postgresql.postgresql_db:
+      name: "{{ db_name }}"
     become_user: postgres
-    become: yes
+    become: true
     tags:
       - db
 
   - name: Database | Create user
-    postgresql_user: name="{{ db_user }}" password="{{ db_password }}" role_attr_flags="{{ db_user_role }}"
+    community.postgresql.postgresql_user:
+      name: "{{ db_user }}"
+      password: "{{ db_password }}"
+      role_attr_flags: "{{ db_user_role }}"
     become_user: postgres
-    become: yes
+    become: true
     tags:
       - db
-

@@ -1,63 +1,71 @@
 ---
   # Parameters:
   - name: PostgreSQL | Check if is installed
-    command: test -x /usr/bin/psql
+    ansible.builtin.command: test -x /usr/bin/psql
     register: psql_present
     changed_when: false
     ignore_errors: yes
     tags: psql
 
-  - block:
+  - name: Postgres
+    block:
 
     - name: PostgreSQL | Add GPG key to apt keyring
-      apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+      ansible.builtin.apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        state: present
       register: apt_key_result
       until: apt_key_result is success
       retries: 10
       when: psql_present is failed
       tags: psql
-      become: yes
+      become: true
 
     - name: PostgreSQL | Add apt repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
         state: present
         update_cache: yes
       tags: psql
       when: psql_present is failed
-      become: yes
+      become: true
 
     - name: PostgreSQL | Install
-      apt:
+      ansible.builtin.apt:
         pkg:
           - "postgresql-{{ postgresql_version }}"
           - libpq-dev
-          - python-psycopg2
+          - python3-psycopg2
         update-cache: yes
         force: yes
         state: present
       register: package_install_result
       until: package_install_result is success
       retries: 10
-      become: yes
+      become: true
       when: psql_present is failed
       tags: psql
 
     - name: PostgreSQL | Ensure Service is Started
-      service: name="postgresql" state=started enabled=yes
-      become: yes
+      ansible.builtin.service:
+        name: "postgresql"
+        state: started
+        enabled: yes
+      become: true
       when: docker_test is not defined
       tags: psql
 
     when: ansible_os_family == "Debian"
 
-  - block:
+  - name: Postgres block
+    block:
 
     - name: For troubleshouting, output ansible_python_version
-      debug: var="ansible_python_version"
+      ansible.builtin.debug:
+        var: "ansible_python_version"
 
     - name: PostgreSQL | Ensure PostgreSQL deps are installed for {{ ansible_os_family }}
-      package:
+      ansible.builtin.package:
         name:
           - ca-certificates
           - python-psycopg2
@@ -70,11 +78,11 @@
       until: deps_install_result is success
       when: ansible_python_version is version_compare('3','<')
       retries: 10
-      become: yes
+      become: true
       tags: psql
 
     - name: PostgreSQL | Ensure PostgreSQL deps are installed for {{ ansible_os_family }}
-      package:
+      ansible.builtin.package:
         name:
           - ca-certificates
           - python3-psycopg2
@@ -86,16 +94,18 @@
       until: deps_install_result is success
       when: ansible_python_version is version_compare('3','>=')
       retries: 10
-      become: yes
+      become: true
       tags: psql
 
 
-    - debug: msg="base {{ postgresql_base_version }}  expected {{ postgresql_version }}"
+    - name: Hint
+      ansible.builtin.debug: msg="base {{ postgresql_base_version }}  expected {{ postgresql_version }}"
 
-    - block: # DEFAULT DISTRIBUTION
+    - name: DEFAULT DISTRIBUTION
+      block:
 
       - name: PostgreSQL | Ensure PostgreSQL packages are installed for {{ ansible_os_family }}
-        package:
+        ansible.builtin.package:
           name:
             - postgresql
             - postgresql-server
@@ -105,53 +115,57 @@
         register: postgres_install_result
         until: postgres_install_result is success
         retries: 10
-        become: yes
+        become: true
         tags: psql
 
       - name: Check if PostgreSQL database is initialized.
-        stat:
+        ansible.builtin.stat:
           path: "{{ postgresql_data_dir }}/PG_VERSION"
         register: pgdata_dir_version
-        become: yes
+        become: true
         tags: psql
 
       - name: PostgreSQL | InitDB
         shell: service postgresql initdb
         when: not pgdata_dir_version.stat.exists and docker_test is not defined
-        become: yes
+        become: true
         tags:
         - psql
         - skip_ansible_lint
 
       - name: PostgreSQL | Check config
         shell: chkconfig postgresql on
-        become: yes
+        become: true
         when: docker_test is not defined
         tags:
         - psql
         - skip_ansible_lint
 
       - name: PostgreSQL | Ensure Service is Started
-        service: name="postgresql" state=started enabled=yes
-        become: yes
+        ansible.builtin.service:
+          name: "postgresql"
+          state: started
+          enabled: yes
+        become: true
         when: docker_test is not defined
         tags: psql
 
       when: postgresql_base_version == postgresql_version # /DEFAULT DISTRIBUTION
 
-    - block: #  Non standard supported by postgresql.org
+    - name: Non standard supported by postgresql.org
+      block: #  Non standard supported by postgresql.org
 
         - name: PostgreSQL | Override data conf paths
-          set_fact:
-             postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
-             postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
-             postgresql_service_name: "postgresql-{{ postgresql_version }}"
+          ansible.builtin.set_fact:
+            postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
+            postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version }}/data"
+            postgresql_service_name: "postgresql-{{ postgresql_version }}"
           no_log: true
           tags:
           - psql
 
         - name: PostgreSQL | Repo try 3
-          uri:
+          ansible.builtin.uri:
             url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-3.noarch.rpm"
           register: repo_test3
           ignore_errors: yes
@@ -160,7 +174,7 @@
           - psql
 
         - name: PostgreSQL | Repo try 2
-          uri:
+          ansible.builtin.uri:
             url: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-2.noarch.rpm"
           register: repo_test2
           ignore_errors: yes
@@ -170,37 +184,37 @@
           - skip_ansible_lint
 
         - name: PostgreSQL | Install postgres RPM repo (first release)
-          yum:
+          ansible.builtin.yum:
             name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-1.noarch.rpm"
             state: present
           when: repo_test2.status == 404 and repo_test3.status == 404
-          become: yes
+          become: true
           tags:
           - psql
           - skip_ansible_lint
 
         - name: PostgreSQL | Install postgres RPM repo (Second release)
-          yum:
+          ansible.builtin.yum:
             name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-2.noarch.rpm"
             state: present
-          become: yes
+          become: true
           when: repo_test2.status == 200
           tags:
           - psql
           - skip_ansible_lint
 
         - name: PostgreSQL | Install postgres RPM repo (Third release)
-          yum:
+          ansible.builtin.yum:
             name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture | lower }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version | replace('.', '') }}-{{ postgresql_version }}-3.noarch.rpm"
             state: present
-          become: yes
+          become: true
           when: repo_test3.status == 200
           tags:
           - psql
           - skip_ansible_lint
 
         - name: PostgreSQL | Install postgres packages and other deps
-          yum:
+          ansible.builtin.yum:
             state: present
             name:
               - postgresql{{ postgresql_version | replace('.', '') }}-server
@@ -208,25 +222,25 @@
               - python-psycopg2
               - postgresql-libs
               - libselinux-python
-          become: yes
+          become: true
           tags:
           - psql
 
         - name: PostgreSQL | Initialize postgres db
-          command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version | replace('.', '') }}-setup initdb
+          ansible.builtin.command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version | replace('.', '') }}-setup initdb
           args:
             creates: /var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf
-          become: yes
+          become: true
           tags:
           - psql
 
         - name: Enable and start postgres service
-          service:
+          ansible.builtin.service:
             name: postgresql-{{ postgresql_version }}
             enabled: yes
             state: started
           when: docker_test is not defined
-          become: yes
+          become: true
           tags:
           - psql
 
