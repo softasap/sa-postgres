@@ -48,7 +48,8 @@ jobs:
     strategy:
       matrix:
         distro:
-          - fedora33
+# TODO: Check issue for temporary directory
+#          - fedora33
           - centos7
           - ubuntu1604
           - ubuntu1804
