@@ -1,32 +1,40 @@
 ---
 # tasks file for sa.postgres
 
-  - name: Include provider related vars
-    include_vars: "{{ item }}"
-    with_first_found:
-      - files:
-          - "{{ ansible_distribution }}-{{ ansible_distribution_version.split('.')[0] }}.yml" # Debian like
-          - "{{ ansible_os_family }}-{{ ansible_distribution_version.split('.')[0] }}.yml" # Other
-          - "{{ ansible_distribution }}"
-          - "{{ ansible_os_family }}"
-          - "main.yml"
-        skip: true
-    tags:
-      - always
+- name: Include provider related vars
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version.split('.')[0] }}.yml"
+        # Debian like
+        - "{{ ansible_os_family }}-{{ ansible_distribution_version.split('.')[0] }}.yml"
+        # Other
+        - "{{ ansible_distribution }}"
+        - "{{ ansible_os_family }}"
+        - "main.yml"
+      skip: true
+  tags:
+    - always
 
-  - include_tasks: postgres.yml
+- name: Include PostgreSQL setup tasks
+  ansible.builtin.include_tasks: postgres.yml
 
-  - include_tasks: postgres_remote.yml
-    when: not ( docker_test is defined and ansible_os_family in ["RedHat"] )
+- name: Include remote PostgreSQL tasks
+  ansible.builtin.include_tasks: postgres_remote.yml
+  when: not (docker_test is defined and ansible_os_family in ["RedHat"])
 
-  - include_tasks: db_user.yml
-    when: option_create_app_user
+- name: Include database user creation tasks
+  ansible.builtin.include_tasks: db_user.yml
+  when: option_create_app_user
 
-  - include_tasks: tasks_console_helper.yml
+- name: Include console helper tasks
+  ansible.builtin.include_tasks: tasks_console_helper.yml
 
-  - name: PostgreSQL | Control postgres restart
-    service: name="{{ postgresql_service_name }}" state=started enabled=yes
-    become: yes
-    when: docker_test is not defined
-    tags: psql
-
+- name: PostgreSQL | Control postgres restart
+  ansible.builtin.service:
+    name: "{{ postgresql_service_name }}"
+    state: started
+    enabled: yes
+  become: true
+  when: docker_test is not defined
+  tags: psql

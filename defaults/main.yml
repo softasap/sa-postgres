@@ -1,36 +1,36 @@
 ---
 # defaults file for sa.postgres
 
-  role_dir: "{{role_path}}"
+role_dir: "{{ role_path }}"
 
-  option_create_app_user: false
+option_create_app_user: false
 
-  postgresql_version: 9.4
-  postgresql_base_version: "{{ postgresql_version }}" # overwrite at vars level depending on OS capabilities
-  postgresql_config_path: "/etc/postgresql/{{ postgresql_version }}/main"
-  postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
+postgresql_version: 9.4
+postgresql_base_version: "{{ postgresql_version }}"  # overwrite at vars level depending on OS capabilities
+postgresql_config_path: "/etc/postgresql/{{ postgresql_version }}/main"
+postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
 
-  postgresql_listen_addresses: localhost  # * for any address
+postgresql_listen_addresses: localhost  # * for any address
 
-  postgresql_port: 5432
-  postgresql_service_name: "postgresql"
+postgresql_port: 5432
+postgresql_service_name: "postgresql"
 
-  # set to true if you have issues with postgresql_ext authorization
-  postgres_force_change_peer_md5: false
+# set to true if you have issues with postgresql_ext authorization
+postgres_force_change_peer_md5: false
 
-  # set to true if you want to be able to authorize via uname/pass rather than rely on unix username for login
-  postgres_allow_password_to_dev_network: false
+# set to true if you want to be able to authorize via uname/pass rather than rely on unix username for login
+postgres_allow_password_to_dev_network: false
 
-  # Set remotely to allow listening
-  #postgres_app_network: "192.168.0.1/32"
-  #postgres_app_network_regex: "192\.168\.0\.1\/32"
+# Set remotely to allow listening
+# postgres_app_network: "192.168.0.1/32"
+# postgres_app_network_regex: "192\.168\.0\.1\/32"
 
-  # Set remotely to allow listening
-  postgres_dev_network: "127.0.0.1/32"
-  postgres_dev_network_regex: "127\\.0\\.0\\.1\\/32"
+# Set remotely to allow listening
+postgres_dev_network: "127.0.0.1/32"
+postgres_dev_network_regex: "127\\.0\\.0\\.1\\/32"
 
-  db_host: localhost
-  db_user: app_user
-  db_password: app_password
-  db_name: app_database
-  db_user_role: "CREATEDB,NOSUPERUSER"
+db_host: localhost
+db_user: app_user
+db_password: app_password
+db_name: app_database
+db_user_role: "CREATEDB,NOSUPERUSER"
