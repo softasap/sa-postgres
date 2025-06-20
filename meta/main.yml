@@ -3,7 +3,7 @@ galaxy_info:
   role_name: sa_postgres
 #  alternate_role_name:
 #    - sa-postgres
-  standalone: true
+#  standalone: true
   namespace: softasap
   author: vyacheslav voronenko
   description: Installs postgresql, app user, optionally patches listen address and trusted networks
