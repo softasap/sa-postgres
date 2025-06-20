@@ -44,19 +44,19 @@ platforms:
       - "disksize.size = '50GB'"
     provider_raw_config_args:
       - "customize [ 'modifyvm', :id, '--uartmode1', 'disconnected' ]"
-  - name: alpine
-    box:  generic/alpine318
-    memory: 4096
-    cpus: 2
-    interfaces:
-      - network_name: private_network
-        type: dhcp
-        auto_config: true
-    instance_raw_config_args:
-      - "vbguest.auto_update = false"   # yamllint disable-line
-      - "disksize.size = '50GB'"
-    provider_raw_config_args:
-      - "customize [ 'modifyvm', :id, '--uartmode1', 'disconnected' ]"
+  # - name: alpine
+  #   box:  generic/alpine318
+  #   memory: 4096
+  #   cpus: 2
+  #   interfaces:
+  #     - network_name: private_network
+  #       type: dhcp
+  #       auto_config: true
+  #   instance_raw_config_args:
+  #     - "vbguest.auto_update = false"   # yamllint disable-line
+  #     - "disksize.size = '50GB'"
+  #   provider_raw_config_args:
+  #     - "customize [ 'modifyvm', :id, '--uartmode1', 'disconnected' ]"
 
 
 provisioner:

@@ -10,6 +10,16 @@
   - name: PostgreSQL | Debian installation tasks
     when: ansible_os_family == "Debian"
     block:
+      - name: PostgreSQL | Install gnupg (required for apt-key)
+        ansible.builtin.apt:
+          name:
+            - gnupg
+          state: present
+          update_cache: yes
+        when: psql_present is failed
+        tags: psql
+        become: true
+
       - name: PostgreSQL | Add GPG key to apt keyring
         ansible.builtin.apt_key:
           url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
@@ -35,7 +45,7 @@
           pkg:
             - "postgresql-{{ postgresql_version }}"
             - libpq-dev
-            - python-psycopg2
+            - python3-psycopg2
           update-cache: yes
           force: yes
           state: present

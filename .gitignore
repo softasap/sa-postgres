@@ -10,3 +10,4 @@ __pycache__/
 .cache
 .aid*
 .ansible
+auto-patch.sh
