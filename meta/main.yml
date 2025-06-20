@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: sa_postgres
-  alternate_role_name:
-    - sa-postgres
+#  alternate_role_name:
+#    - sa-postgres
   standalone: true
   namespace: softasap
   author: vyacheslav voronenko
@@ -35,8 +35,7 @@ galaxy_info:
         - jammy
         - noble
   galaxy_tags:
-    - apache
-    - ubuntu
+    - database
 
 dependencies: []
   # List your role dependencies here, one per line.
