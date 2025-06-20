@@ -1,34 +1,47 @@
 ---
-  - block:
-
+- name: Configure PostgreSQL console helpers
+  when: ansible_os_family == "Debian"
+  block:
     - name: PostgreSQL | Install colorer grc
-      package: name="grc" state="present"
+      ansible.builtin.package:
+        name: "grc"
+        state: "present"
       register: grc_result
       until: grc_result is success
       retries: 10
-      become: yes
+      become: true
       tags: psql
 
     - name: PostgreSQL | Template colorer to current user
-      template: src="{{ role_dir }}/templates/grcat.pgsql" dest="~/grcat.pgsql"
+      ansible.builtin.template:
+        src: "{{ role_dir }}/templates/grcat.pgsql"
+        dest: "{{ ansible_user_dir }}/grcat.pgsql"
+        mode: "0644"
       tags: psql
 
     - name: PostgreSQL | psqlrc to current user
-      template: src="{{ role_dir }}/templates/psqlrc.j2" dest="~/.psqlrc"
+      ansible.builtin.template:
+        src: "{{ role_dir }}/templates/psqlrc.j2"
+        dest: "{{ ansible_user_dir }}/.psqlrc"
+        mode: "0600"
       tags: psql
 
     - name: PostgreSQL | Template colorer to postgres user
-      template: src="{{ role_dir }}/templates/grcat.pgsql" dest="~/grcat.pgsql"
-      become: yes
+      ansible.builtin.template:
+        src: "{{ role_dir }}/templates/grcat.pgsql"
+        dest: "/var/lib/postgresql/grcat.pgsql"
+        mode: "0644"
+      become: true
       become_user: postgres
       when: docker_test is not defined
       tags: psql
 
     - name: PostgreSQL | psqlrc to postgres user
-      template: src="{{ role_dir }}/templates/psqlrc.j2" dest="~/.psqlrc"
-      become: yes
+      ansible.builtin.template:
+        src: "{{ role_dir }}/templates/psqlrc.j2"
+        dest: "/var/lib/postgresql/.psqlrc"
+        mode: "0600"
+      become: true
       become_user: postgres
       when: docker_test is not defined
       tags: psql
-
-    when: ansible_os_family == "Debian"
